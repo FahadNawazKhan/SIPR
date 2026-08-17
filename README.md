@@ -9,26 +9,26 @@ SIPR is a personal, mobile-first PWA for single-user water intake tracking using
 ```text
 SIPR/
 ├── client/     # React + Vite + Tailwind CSS + PWA (Deploy to Vercel)
-└── server/     # Node.js + Express + MongoDB Atlas (Deploy to Railway)
+└── server/     # Node.js + Express + MongoDB Atlas (Deploy to Render)
 ```
 
 ---
 
 ## 🚀 Deployment Guide
 
-### 1. Backend Deployment (Railway)
+### 1. Backend Deployment (Render)
 
-1. Go to [Railway](https://railway.app) and create a **New Project**.
-2. Select **Deploy from GitHub repo** and choose `github.com/FahadNawazKhan/SIPR`.
-3. In service settings, set:
+1. Go to [Render](https://render.com) and create a **Web Service**.
+2. Connect your GitHub repository (`github.com/FahadNawazKhan/SIPR`).
+3. Configure service settings:
    - **Root Directory**: `server`
+   - **Environment**: `Node`
    - **Build Command**: `pnpm install`
    - **Start Command**: `node server.js`
-4. Add Environment Variables on Railway:
+4. Add Environment Variables on Render:
    - `MONGO_URI`: `mongodb+srv://<username>:<password>@<cluster-url>/sipr?retryWrites=true&w=majority`
    - `CLIENT_URL`: `https://your-sipr-frontend.vercel.app` *(Your Vercel frontend URL)*
-5. Generate a Public Domain under **Settings -> Networking -> Generate Domain**.
-6. Copy your live Railway URL (e.g. `https://sipr-backend.up.railway.app`).
+5. Deploy the Web Service and copy your live backend URL (e.g. `https://sipr-backend.onrender.com`).
 
 ---
 
@@ -42,7 +42,7 @@ SIPR/
    - **Build Command**: `pnpm build`
    - **Output Directory**: `dist`
 4. Add Environment Variables on Vercel:
-   - `VITE_API_URL`: `https://sipr-backend.up.railway.app/api` *(Replace with your Railway URL + `/api`)*
+   - `VITE_API_URL`: `https://sipr-backend.onrender.com/api` *(Replace with your Render backend URL + `/api`)*
 5. Deploy. Vercel automatically applies `client/vercel.json` rewrites for SPA client-side routing.
 
 ---
@@ -60,7 +60,7 @@ Phone taps NFC tag
   ↓
 Opens https://your-sipr-frontend.vercel.app/tap/water-bottle
   ↓
-SIPR PWA processes route & calls Railway backend
+SIPR PWA processes route & calls Render backend
   ↓
 +1 L logged to MongoDB Atlas
   ↓
