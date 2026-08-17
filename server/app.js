@@ -19,13 +19,13 @@ app.use(cors({
 app.use(express.json());
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', service: 'SIPR API' });
 });
 
-// API Routes
-app.use('/api/water', waterRoutes);
-app.use('/api/nfc', nfcRoutes);
+// API Routes - mount both with and without /api prefix for robust compatibility
+app.use(['/api/water', '/water'], waterRoutes);
+app.use(['/api/nfc', '/nfc'], nfcRoutes);
 
 // 404 handler
 app.use((req, res) => {
