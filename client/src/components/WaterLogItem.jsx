@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trash2, Radio, Touchpad } from 'lucide-react';
-import { formatVolume, formatTime } from '../models/waterModel';
+import { formatVolume, formatTime } from '../services/api.js';
 
 export default function WaterLogItem({ log, onDelete, isDeleting = false }) {
   const isNfc = log.source === 'nfc';

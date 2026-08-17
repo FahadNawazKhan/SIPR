@@ -1,24 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import PageHeader from '../components/PageHeader';
-import WaterProgress from '../components/WaterProgress';
-import QuickAdd from '../components/QuickAdd';
-import WaterLogItem from '../components/WaterLogItem';
-import EmptyState from '../components/EmptyState';
-import { fetchToday, addWater } from '../controllers/waterController';
-import { getStoredGoal } from '../models/waterModel';
+import PageHeader from '../components/PageHeader.jsx';
+import WaterProgress from '../components/WaterProgress.jsx';
+import QuickAdd from '../components/QuickAdd.jsx';
+import WaterLogItem from '../components/WaterLogItem.jsx';
+import EmptyState from '../components/EmptyState.jsx';
+import { getTodayWater, addWater, getStoredGoal } from '../services/api.js';
 
 export default function Home() {
-  const [data, setData] = useState(null);
+  const [water, setWater] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const goalMl = getStoredGoal();
 
-  const loadData = async () => {
+  async function loadToday() {
     try {
       setError(null);
-      const res = await fetchToday(goalMl);
+      const res = await getTodayWater(goalMl);
       if (res.success) {
-        setData(res.data);
+        setWater(res.data);
       } else {
         setError("Couldn't connect. Check your connection and try again.");
       }
@@ -27,29 +26,29 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
-    loadData();
+    loadToday();
   }, [goalMl]);
 
-  const handleQuickAdd = async (amountMl) => {
+  async function handleAddWater(amount) {
     try {
-      const res = await addWater(amountMl, goalMl);
+      const res = await addWater(amount, goalMl);
       if (res.success) {
-        await loadData();
+        await loadToday();
       }
     } catch (err) {
-      setError("Failed to log water. Try again.");
+      setError('Failed to log water. Try again.');
     }
-  };
+  }
 
-  const getGreeting = () => {
+  function getGreeting() {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
-  };
+  }
 
   return (
     <div className="pb-24 pt-2">
@@ -67,7 +66,7 @@ export default function Home() {
           <p className="text-[13px] text-[#6B7280] mb-4">Check your connection and try again.</p>
           <button
             type="button"
-            onClick={loadData}
+            onClick={loadToday}
             className="px-4 py-2 bg-[#0E7C86] text-white rounded-lg text-xs font-semibold"
           >
             Retry
@@ -75,11 +74,11 @@ export default function Home() {
         </div>
       ) : (
         <div className="space-y-8">
-          <WaterProgress totalMl={data?.totalMl || 0} goalMl={goalMl} />
+          <WaterProgress total={water?.totalMl || 0} goal={goalMl} />
 
           <hr className="border-[#E8E7E3]" />
 
-          <QuickAdd onAdd={handleQuickAdd} />
+          <QuickAdd onAdd={handleAddWater} />
 
           <hr className="border-[#E8E7E3]" />
 
@@ -87,8 +86,8 @@ export default function Home() {
             <h3 className="text-[13px] font-semibold tracking-wider text-[#6B7280] uppercase mb-3">
               LAST DRINK
             </h3>
-            {data?.lastLog ? (
-              <WaterLogItem log={data.lastLog} />
+            {water?.lastLog ? (
+              <WaterLogItem log={water.lastLog} />
             ) : (
               <EmptyState message="No water logged yet today." />
             )}

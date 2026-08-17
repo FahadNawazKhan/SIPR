@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Radio, CheckCircle2, AlertCircle } from 'lucide-react';
-import { handleNfcTap } from '../controllers/waterController';
-import { getStoredGoal, formatVolume } from '../models/waterModel';
+import { logNfc, getStoredGoal, formatVolume } from '../services/api.js';
 
 export default function Tap() {
   const { tagId } = useParams();
@@ -18,8 +17,7 @@ export default function Tap() {
     if (!tagId || processedRef.current) return;
     processedRef.current = true;
 
-    const processTap = async () => {
-      // 5-second duplicate protection check
+    async function processTap() {
       const storageKey = `sipr_last_tap_${tagId}`;
       const lastTapStr = sessionStorage.getItem(storageKey);
       const now = Date.now();
@@ -35,11 +33,10 @@ export default function Tap() {
         }
       }
 
-      // Record current tap timestamp
       sessionStorage.setItem(storageKey, now.toString());
 
       try {
-        const res = await handleNfcTap(tagId, goalMl);
+        const res = await logNfc(tagId, goalMl);
         if (res.success) {
           setTapData(res.data);
           setStatus('success');
@@ -55,7 +52,7 @@ export default function Tap() {
         setErrorMessage(msg);
         setStatus('error');
       }
-    };
+    }
 
     processTap();
   }, [tagId, goalMl, navigate]);

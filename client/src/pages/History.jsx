@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import PageHeader from '../components/PageHeader';
-import WaterLogItem from '../components/WaterLogItem';
-import EmptyState from '../components/EmptyState';
-import { fetchHistory, deleteWater } from '../controllers/waterController';
-import { formatDateGroup } from '../models/waterModel';
+import PageHeader from '../components/PageHeader.jsx';
+import WaterLogItem from '../components/WaterLogItem.jsx';
+import EmptyState from '../components/EmptyState.jsx';
+import { getHistory, deleteWaterLog, formatDateGroup } from '../services/api.js';
 
 export default function History() {
   const [logs, setLogs] = useState([]);
@@ -11,30 +10,30 @@ export default function History() {
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
-  const loadHistory = async () => {
+  async function loadHistory() {
     try {
       setError(null);
-      const res = await fetchHistory();
+      const res = await getHistory();
       if (res.success) {
         setLogs(res.data || []);
       } else {
-        setError("Failed to load history.");
+        setError('Failed to load history.');
       }
     } catch (err) {
       setError("Couldn't connect. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     loadHistory();
   }, []);
 
-  const handleDelete = async (id) => {
+  async function handleDelete(id) {
     setDeletingId(id);
     try {
-      const res = await deleteWater(id);
+      const res = await deleteWaterLog(id);
       if (res.success) {
         setLogs((prev) => prev.filter((item) => item._id !== id));
       }
@@ -43,9 +42,8 @@ export default function History() {
     } finally {
       setDeletingId(null);
     }
-  };
+  }
 
-  // Group logs by date string
   const groupedLogs = logs.reduce((acc, log) => {
     const key = formatDateGroup(log.createdAt);
     if (!acc[key]) acc[key] = [];

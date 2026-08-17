@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "pnpm dev:client",
     "dev:client": "pnpm --filter sipr-client dev",
     "dev:server": "pnpm --filter sipr-server dev",
     "seed": "pnpm --filter sipr-server seed",

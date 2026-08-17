@@ -9,41 +9,41 @@ SIPR is a personal, mobile-first PWA for single-user water intake tracking using
 ```text
 SIPR/
 ├── client/     # React + Vite + Tailwind CSS + PWA (Deploy to Vercel)
-└── server/     # Node.js + Express + MongoDB Atlas (Deploy to Render)
+└── server/     # Node.js + Express + MongoDB Atlas (Deploy to Railway)
 ```
 
 ---
 
 ## 🚀 Deployment Guide
 
-### 1. Backend Deployment (Render)
+### 1. Backend Deployment (Railway)
 
-1. Create a **Web Service** on [Render](https://render.com).
-2. Connect your GitHub repository (`github.com/FahadNawazKhan/SIPR`).
-3. Configure service settings:
+1. Go to [Railway](https://railway.app) and create a **New Project**.
+2. Select **Deploy from GitHub repo** and choose `github.com/FahadNawazKhan/SIPR`.
+3. In service settings, set:
    - **Root Directory**: `server`
-   - **Environment**: `Node`
    - **Build Command**: `pnpm install`
    - **Start Command**: `node server.js`
-4. Add Environment Variables on Render:
+4. Add Environment Variables on Railway:
    - `MONGO_URI`: `mongodb+srv://<username>:<password>@<cluster-url>/sipr?retryWrites=true&w=majority`
    - `CLIENT_URL`: `https://your-sipr-frontend.vercel.app` *(Your Vercel frontend URL)*
-5. Deploy the Web Service and copy your live backend URL (e.g. `https://sipr-backend.onrender.com`).
+5. Generate a Public Domain under **Settings -> Networking -> Generate Domain**.
+6. Copy your live Railway URL (e.g. `https://sipr-backend.up.railway.app`).
 
 ---
 
 ### 2. Frontend Deployment (Vercel)
 
-1. Create a **New Project** on [Vercel](https://vercel.com).
-2. Import your GitHub repository.
+1. Go to [Vercel](https://vercel.com) and create a **New Project**.
+2. Import your GitHub repository (`github.com/FahadNawazKhan/SIPR`).
 3. Configure project settings:
    - **Root Directory**: `client`
    - **Framework Preset**: `Vite`
    - **Build Command**: `pnpm build`
    - **Output Directory**: `dist`
 4. Add Environment Variables on Vercel:
-   - `VITE_API_URL`: `https://sipr-backend.onrender.com/api` *(Replace with your Render backend URL + `/api`)*
-5. Deploy. Vercel automatically applies `client/vercel.json` rewrites for client-side routing.
+   - `VITE_API_URL`: `https://sipr-backend.up.railway.app/api` *(Replace with your Railway URL + `/api`)*
+5. Deploy. Vercel automatically applies `client/vercel.json` rewrites for SPA client-side routing.
 
 ---
 
@@ -60,7 +60,7 @@ Phone taps NFC tag
   ↓
 Opens https://your-sipr-frontend.vercel.app/tap/water-bottle
   ↓
-SIPR PWA processes route & calls Render backend
+SIPR PWA processes route & calls Railway backend
   ↓
 +1 L logged to MongoDB Atlas
   ↓
@@ -89,6 +89,8 @@ pnpm seed
 
 ### 4. Start Development Servers
 ```bash
-pnpm dev:server
-pnpm dev:client
+# Start backend and frontend
+npm run dev
+# or
+pnpm dev
 ```

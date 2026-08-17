@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import PageHeader from '../components/PageHeader';
-import { getStoredGoal, setStoredGoal, formatVolume } from '../models/waterModel';
+import PageHeader from '../components/PageHeader.jsx';
+import { getStoredGoal, setStoredGoal, formatVolume } from '../services/api.js';
 
 const GOAL_OPTIONS = [2000, 2500, 3000, 3500, 4000];
 
@@ -9,21 +9,21 @@ export default function Settings() {
   const [customGoal, setCustomGoal] = useState('');
   const [savedMsg, setSavedMsg] = useState('');
 
-  const handleSelectGoal = (newGoal) => {
+  function handleSelectGoal(newGoal) {
     setGoal(newGoal);
     setStoredGoal(newGoal);
     setSavedMsg('Daily goal updated');
     setTimeout(() => setSavedMsg(''), 2000);
-  };
+  }
 
-  const handleCustomSubmit = (e) => {
+  function handleCustomSubmit(e) {
     e.preventDefault();
     const val = parseInt(customGoal, 10);
     if (!isNaN(val) && val > 0) {
       handleSelectGoal(val);
       setCustomGoal('');
     }
-  };
+  }
 
   return (
     <div className="pb-24 pt-2">

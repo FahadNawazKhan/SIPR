@@ -1,53 +1,121 @@
-import * as waterService from '../services/waterService.js';
+import WaterLog from '../models/WaterLog.js';
 
-export const getToday = async (req, res, next) => {
+// Helper to get today's start and end date boundaries
+function getTodayBoundaries() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+}
+
+// GET /api/water/today
+export async function getToday(req, res, next) {
   try {
-    const goalMl = req.query.goalMl ? Number(req.query.goalMl) : 3000;
-    const data = await waterService.getTodayWater(goalMl);
+    const goalMl = Number(req.query.goalMl) || 3000;
+    const { start, end } = getTodayBoundaries();
+
+    const logs = await WaterLog.find({
+      createdAt: { $gte: start, $lte: end }
+    }).sort({ createdAt: -1 });
+
+    let totalMl = 0;
+    for (const log of logs) {
+      totalMl += log.amountMl;
+    }
+
+    const percentage = Math.round((totalMl / goalMl) * 100);
+    const remainingMl = Math.max(0, goalMl - totalMl);
+    const lastLog = logs.length > 0 ? logs[0] : null;
+
     res.json({
       success: true,
-      data
+      data: {
+        totalMl,
+        goalMl,
+        percentage,
+        remainingMl,
+        lastLog
+      }
     });
   } catch (error) {
     next(error);
   }
-};
+}
 
-export const logWater = async (req, res, next) => {
+// POST /api/water/log
+export async function logWater(req, res, next) {
   try {
-    const { amountMl } = req.body;
-    const goalMl = req.body.goalMl ? Number(req.body.goalMl) : 3000;
-    const data = await waterService.logWater(amountMl, 'manual', goalMl);
+    const amountMl = Number(req.body.amountMl);
+    const goalMl = Number(req.body.goalMl) || 3000;
+
+    if (!amountMl || amountMl <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid water amount'
+      });
+    }
+
+    const log = await WaterLog.create({
+      amountMl,
+      source: 'manual'
+    });
+
+    const { start, end } = getTodayBoundaries();
+    const todayLogs = await WaterLog.find({
+      createdAt: { $gte: start, $lte: end }
+    });
+
+    let todayTotalMl = 0;
+    for (const item of todayLogs) {
+      todayTotalMl += item.amountMl;
+    }
+
     res.status(201).json({
       success: true,
-      data
+      data: {
+        log,
+        todayTotalMl
+      }
     });
   } catch (error) {
     next(error);
   }
-};
+}
 
-export const getHistory = async (req, res, next) => {
+// GET /api/water/history
+export async function getHistory(req, res, next) {
   try {
-    const data = await waterService.getHistory();
+    const logs = await WaterLog.find().sort({ createdAt: -1 });
     res.json({
       success: true,
-      data
+      data: logs
     });
   } catch (error) {
     next(error);
   }
-};
+}
 
-export const deleteWater = async (req, res, next) => {
+// DELETE /api/water/log/:id
+export async function deleteWater(req, res, next) {
   try {
     const { id } = req.params;
-    const deleted = await waterService.deleteWater(id);
+    const deletedLog = await WaterLog.findByIdAndDelete(id);
+
+    if (!deletedLog) {
+      return res.status(404).json({
+        success: false,
+        message: 'Water log not found'
+      });
+    }
+
     res.json({
       success: true,
-      data: deleted
+      data: deletedLog
     });
   } catch (error) {
     next(error);
   }
-};
+}
