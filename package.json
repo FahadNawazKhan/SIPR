@@ -1,0 +1,12 @@
+{
+  "name": "sipr-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:client": "pnpm --filter sipr-client dev",
+    "dev:server": "pnpm --filter sipr-server dev",
+    "seed": "pnpm --filter sipr-server seed",
+    "build": "pnpm --filter sipr-client build"
+  }
+}
