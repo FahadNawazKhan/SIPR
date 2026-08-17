@@ -19,16 +19,16 @@ SIPR/
 ### 1. Backend Deployment (Render)
 
 1. Create a **Web Service** on [Render](https://render.com).
-2. Connect your GitHub repository.
-3. Configure the service settings:
+2. Connect your GitHub repository (`github.com/FahadNawazKhan/SIPR`).
+3. Configure service settings:
    - **Root Directory**: `server`
    - **Environment**: `Node`
    - **Build Command**: `pnpm install`
    - **Start Command**: `node server.js`
 4. Add Environment Variables on Render:
-   - `MONGO_URI`: `mongodb+srv://faddukhan3_db_user:8YLSbo4CmIJrGg6T@cluster0.xemjckv.mongodb.net/sipr?retryWrites=true&w=majority`
-   - `CLIENT_URL`: `https://your-sipr-frontend.vercel.app` *(Your Vercel URL)*
-5. Deploy the Web Service. Copy your live backend URL (e.g. `https://sipr-backend.onrender.com`).
+   - `MONGO_URI`: `mongodb+srv://<username>:<password>@<cluster-url>/sipr?retryWrites=true&w=majority`
+   - `CLIENT_URL`: `https://your-sipr-frontend.vercel.app` *(Your Vercel frontend URL)*
+5. Deploy the Web Service and copy your live backend URL (e.g. `https://sipr-backend.onrender.com`).
 
 ---
 
@@ -76,12 +76,18 @@ Shows confirmation (+1 L Logged) & redirects to Dashboard
 pnpm install
 ```
 
-### 2. Seed NFC Tag
+### 2. Environment Setup
+Copy `.env.example` to `.env` in the `server` directory and fill in your database credentials:
+```bash
+cp server/.env.example server/.env
+```
+
+### 3. Seed NFC Tag
 ```bash
 pnpm seed
 ```
 
-### 3. Start Development Servers
+### 4. Start Development Servers
 ```bash
 pnpm dev:server
 pnpm dev:client
