@@ -30,6 +30,25 @@ export default function Home() {
 
   useEffect(() => {
     loadToday();
+
+    // Auto-refresh dashboard data whenever PWA comes back into focus
+    const handleFocus = () => {
+      loadToday();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        loadToday();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [goalMl]);
 
   async function handleAddWater(amount) {
@@ -52,7 +71,7 @@ export default function Home() {
 
   return (
     <div className="pb-24 pt-2">
-      <PageHeader title="SIPR" greeting={getGreeting()} />
+      <PageHeader title="SIPR" greeting={getGreeting()} onRefresh={loadToday} />
 
       {loading ? (
         <div className="animate-pulse space-y-6 my-6">
